@@ -87,15 +87,15 @@ menu.style.display = "none";
 loop();
 }
 
-startBtn.onclick = start;
+startBtn.addEventListener("click", start);
 
-document.addEventListener("keydown", ()=>{
-if(running) velocity = -8;
-});
+document.addEventListener("keydown", jump);
+document.addEventListener("click", jump);
 
-document.addEventListener("click", ()=> {
-if(running) velocity = -8;
-});
+function jump(){
+if(!running) return;
+velocity = -8;
+}
 
 function drawBird(){
 ctx.fillStyle="yellow";
@@ -141,11 +141,10 @@ ui.innerText = score;
 function gameOver(){
 running = false;
 menu.style.display = "block";
-menu.innerHTML = 
-Game Over<br>
-Score: ${score}<br><br>
-<button id="startBtn">دوباره</button>
-;
+menu.innerHTML =
+"Game Over<br>Score: " + score +
+"<br><br><button id='startBtn'>دوباره</button>";
+
 document.getElementById("startBtn").onclick = start;
 }
 
