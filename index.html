@@ -56,16 +56,19 @@ cursor:pointer;
 
 <div id="menu">
 Flappy Bird<br><br>
-<button onclick="startGame()">شروع بازی</button>
+<button id="startBtn">شروع بازی</button>
 </div>
 
 <canvas id="game" width="420" height="700"></canvas>
 
 <script>
+window.onload = function(){
+
 const canvas = document.getElementById("game");
 const ctx = canvas.getContext("2d");
 const ui = document.getElementById("ui");
 const menu = document.getElementById("menu");
+const startBtn = document.getElementById("startBtn");
 
 let bird, pipes, frame, score, gravity, velocity, gameRunning;
 
@@ -87,8 +90,10 @@ menu.style.display = "none";
 loop();
 }
 
-document.addEventListener("keydown", ()=>jump());
-document.addEventListener("click", ()=>jump());
+startBtn.addEventListener("click", startGame);
+
+document.addEventListener("keydown", jump);
+document.addEventListener("click", jump);
 
 function jump(){
 if(!gameRunning) return;
@@ -137,7 +142,8 @@ ui.innerText = score;
 function gameOver(){
 gameRunning = false;
 menu.style.display = "block";
-menu.innerHTML = Game Over<br>Score: ${score}<br><button onclick="startGame()">دوباره</button>;
+menu.innerHTML = Game Over<br>Score: ${score}<br><br><button id="startBtn">دوباره</button>;
+document.getElementById("startBtn").addEventListener("click", startGame);
 }
 
 function loop(){
@@ -161,6 +167,8 @@ requestAnimationFrame(loop);
 }
 
 reset();
+
+};
 </script>
 
 </body>
