@@ -3,12 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Flappy Bird</title>
+<title>Flappy Pro</title>
 
 <style>
 body{
 margin:0;
-background:#4EC0CA;
+background:linear-gradient(#4EC0CA,#1b9aaa);
 display:flex;
 justify-content:center;
 align-items:center;
@@ -20,6 +20,7 @@ overflow:hidden;
 canvas{
 background:linear-gradient(#70d6ff,#c2f5ff);
 border-radius:15px;
+box-shadow:0 10px 40px rgba(0,0,0,0.4);
 }
 
 #ui{
@@ -51,10 +52,10 @@ cursor:pointer;
 
 <body>
 
-<div id="ui">0 / 0</div>
+<div id="ui">0 | 0</div>
 
 <div id="menu">
-Flappy Bird<br><br>
+Flappy Pro<br><br>
 <button id="startBtn">شروع بازی</button>
 </div>
 
@@ -65,13 +66,14 @@ const canvas = document.getElementById("game");
 const ctx = canvas.getContext("2d");
 const ui = document.getElementById("ui");
 const menu = document.getElementById("menu");
-const startBtn = document.getElementById("startBtn");
+
+let startBtn;
 
 let bird, pipes, frame, score, gravity, velocity, running;
-let bestScore = localStorage.getItem("bestScore") || 0;
+let best = localStorage.getItem("best") || 0;
 
 function init(){
-bird = {x:80, y:300, r:18};
+bird = {x:80,y:300,r:18};
 pipes = [];
 frame = 0;
 score = 0;
@@ -79,7 +81,10 @@ gravity = 0.5;
 velocity = 0;
 running = false;
 
-ui.innerText = score + " / " + bestScore;
+ui.innerText = score + " | " + best;
+
+startBtn = document.getElementById("startBtn");
+startBtn.onclick = start;
 }
 
 function start(){
@@ -89,16 +94,24 @@ menu.style.display = "none";
 loop();
 }
 
-startBtn.onclick = start;
+document.addEventListener("keydown", jump);
+document.addEventListener("click", jump);
 
-document.addEventListener("keydown", ()=>{ if(running) velocity = -8; });
-document.addEventListener("click", ()=>{ if(running) velocity = -8; });
+function jump(){
+if(!running) return;
+velocity = -8;
+}
 
 function drawBird(){
 ctx.fillStyle="yellow";
+ctx.shadowColor="rgba(0,0,0,0.3)";
+ctx.shadowBlur=10;
+
 ctx.beginPath();
 ctx.arc(bird.x,bird.y,bird.r,0,Math.PI*2);
 ctx.fill();
+
+ctx.shadowBlur=0;
 }
 
 function drawPipes(){
@@ -110,16 +123,13 @@ ctx.fillRect(p.x,p.top+150,60,700);
 }
 
 function updatePipes(){
-if(frame % 90 === 0){
-pipes.push({
-x:420,
-top:Math.random()*300+100
-});
+if(frame % 85 === 0){
+pipes.push({x:420, top:Math.random()*280+100});
 }
 
 for(let i=0;i<pipes.length;i++){
 let p = pipes[i];
-p.x -= 2;
+p.x -= 2.2;
 
 if(bird.x+bird.r > p.x && bird.x-bird.r < p.x+60){
 if(bird.y-bird.r < p.top || bird.y+bird.r > p.top+150){
@@ -127,10 +137,10 @@ gameOver();
 }
 }
 
-if(p.x+60 < 0){
+if(p.x + 60 < 0){
 pipes.splice(i,1);
 score++;
-ui.innerText = score + " / " + bestScore;
+ui.innerText = score + " | " + best;
 }
 }
 }
@@ -139,23 +149,25 @@ function gameOver(){
 
 running = false;
 
-// update best score
-if(score > bestScore){
-bestScore = score;
-localStorage.setItem("bestScore", bestScore);
+// save best
+if(score > best){
+best = score;
+localStorage.setItem("best", best);
 }
 
-ui.innerText = score + " / " + bestScore;
+ui.innerText = score + " | " + best;
 
 menu.style.display = "block";
 menu.innerHTML = 
 Game Over<br>
 Score: ${score}<br>
-Best: ${bestScore}<br><br>
+Best: ${best}<br><br>
 <button id="startBtn">دوباره</button>
 ;
 
+setTimeout(()=>{
 document.getElementById("startBtn").onclick = start;
+},50);
 }
 
 function loop(){
