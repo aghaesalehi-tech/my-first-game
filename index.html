@@ -1,17 +1,159 @@
 <!DOCTYPE html>
 <html lang="fa">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>اولین بازی من</title>
-</head>
-<body style="font-family:Tahoma;text-align:center;padding-top:100px;">
-  <h1>🎮 اولین بازی من</h1>
-  <p>اگر این صفحه را می‌بینی، یعنی پروژه با موفقیت ساخته شده است.</p>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Flappy Bird Pro</title>
 
-  <button onclick="alert('مرحله بعد ساخت بازی شروع می‌شود!')">
-    شروع
-  </button>
-  <script src="game.js"></script>
+<style>
+body{
+margin:0;
+background:#4EC0CA;
+overflow:hidden;
+display:flex;
+justify-content:center;
+align-items:center;
+height:100vh;
+font-family:tahoma;
+}
+  canvas{
+background:linear-gradient(#70d6ff,#c2f5ff);
+border-radius:15px;
+box-shadow:0 0 30px rgba(0,0,0,0.3);
+}
+
+#ui{
+position:absolute;
+top:20px;
+left:50%;
+transform:translateX(-50%);
+font-size:40px;
+font-weight:bold;
+color:white;
+text-shadow:2px 2px 6px black;
+}
+  #menu{
+position:absolute;
+text-align:center;
+color:white;
+font-size:30px;
+text-shadow:2px 2px 6px black;
+}
+
+button{
+padding:12px 25px;
+font-size:20px;
+border:none;
+border-radius:10px;
+cursor:pointer;
+background:#ffd43b;
+font-weight:bold;
+}
+</style>
+</head>
+<body>
+
+<div id="ui">0</div>
+
+<div id="menu">
+Flappy Bird<br><br>
+<button onclick="startGame()">شروع بازی</button>
+</div>
+
+<canvas id="game" width="420" height="700"></canvas>
+<script>
+const canvas = document.getElementById("game");
+const ctx = canvas.getContext("2d");
+const ui = document.getElementById("ui");
+const menu = document.getElementById("menu");
+
+let bird, pipes, frame, score, gravity, velocity, gameRunning;
+  function reset(){
+bird = {x:80, y:300, r:18};
+pipes = [];
+frame = 0;
+score = 0;
+gravity = 0.5;
+velocity = 0;
+gameRunning = false;
+}
+
+function startGame(){
+reset();
+gameRunning = true;
+menu.style.display = "none";
+loop();
+}
+  document.addEventListener("keydown", jump);
+document.addEventListener("click", jump);
+
+function jump(){
+if(!gameRunning) return;
+velocity = -8;
+}
+
+function drawBird(){
+ctx.fillStyle="yellow";
+ctx.beginPath();
+ctx.arc(bird.x,bird.y,bird.r,0,Math.PI*2);
+ctx.fill();
+}
+  function drawPipes(){
+for(let p of pipes){
+ctx.fillStyle="green";
+ctx.fillRect(p.x,0,60,p.top);
+ctx.fillRect(p.x,p.top+150,60,700);
+}
+}
+  function updatePipes(){
+if(frame % 90 === 0){
+let top = Math.random()*300 + 50;
+pipes.push({x:420, top:top});
+}
+
+for(let p of pipes){
+p.x -= 2;
+
+if(bird.x+bird.r > p.x && bird.x-bird.r < p.x+60){
+if(bird.y-bird.r < p.top || bird.y+bird.r > p.top+150){
+gameOver();
+}
+}
+
+if(p.x + 60 < 0){
+pipes.shift();
+score++;
+ui.innerText = score;
+}
+}
+}
+  function gameOver(){
+gameRunning = false;
+menu.style.display = "block";
+menu.innerHTML = Game Over<br>Score: ${score}<br><button onclick="startGame()">دوباره</button>;
+}
+
+function loop(){
+if(!gameRunning) return;
+
+ctx.clearRect(0,0,canvas.width,canvas.height);
+
+velocity += gravity;
+bird.y += velocity;
+
+if(bird.y > 680 || bird.y < 0){
+gameOver();
+}
+
+drawBird();
+drawPipes();
+updatePipes();
+
+frame++;
+requestAnimationFrame(loop);
+}
+
+reset();
+</script>
 </body>
 </html>
