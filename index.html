@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Flappy Pro</title>
+<title>Flappy Fix Pro</title>
 
 <style>
 body{
@@ -20,7 +20,7 @@ overflow:hidden;
 canvas{
 background:linear-gradient(#70d6ff,#c2f5ff);
 border-radius:15px;
-box-shadow:0 10px 40px rgba(0,0,0,0.4);
+box-shadow:0 10px 30px rgba(0,0,0,0.3);
 }
 
 #ui{
@@ -55,22 +55,34 @@ cursor:pointer;
 <div id="ui">0 | 0</div>
 
 <div id="menu">
-Flappy Pro<br><br>
+Flappy Fix Pro<br><br>
 <button id="startBtn">شروع بازی</button>
 </div>
 
 <canvas id="game" width="420" height="700"></canvas>
 
 <script>
-const canvas = document.getElementById("game");
-const ctx = canvas.getContext("2d");
-const ui = document.getElementById("ui");
-const menu = document.getElementById("menu");
-
-let startBtn;
+let canvas, ctx, ui, menu, startBtn;
 
 let bird, pipes, frame, score, gravity, velocity, running;
 let best = localStorage.getItem("best") || 0;
+
+window.onload = function(){
+
+canvas = document.getElementById("game");
+ctx = canvas.getContext("2d");
+ui = document.getElementById("ui");
+menu = document.getElementById("menu");
+startBtn = document.getElementById("startBtn");
+
+startBtn.addEventListener("click", start);
+
+init();
+
+document.addEventListener("keydown", jump);
+document.addEventListener("click", jump);
+
+};
 
 function init(){
 bird = {x:80,y:300,r:18};
@@ -82,9 +94,6 @@ velocity = 0;
 running = false;
 
 ui.innerText = score + " | " + best;
-
-startBtn = document.getElementById("startBtn");
-startBtn.onclick = start;
 }
 
 function start(){
@@ -94,9 +103,6 @@ menu.style.display = "none";
 loop();
 }
 
-document.addEventListener("keydown", jump);
-document.addEventListener("click", jump);
-
 function jump(){
 if(!running) return;
 velocity = -8;
@@ -104,14 +110,9 @@ velocity = -8;
 
 function drawBird(){
 ctx.fillStyle="yellow";
-ctx.shadowColor="rgba(0,0,0,0.3)";
-ctx.shadowBlur=10;
-
 ctx.beginPath();
 ctx.arc(bird.x,bird.y,bird.r,0,Math.PI*2);
 ctx.fill();
-
-ctx.shadowBlur=0;
 }
 
 function drawPipes(){
@@ -146,10 +147,8 @@ ui.innerText = score + " | " + best;
 }
 
 function gameOver(){
-
 running = false;
 
-// save best
 if(score > best){
 best = score;
 localStorage.setItem("best", best);
@@ -158,16 +157,6 @@ localStorage.setItem("best", best);
 ui.innerText = score + " | " + best;
 
 menu.style.display = "block";
-menu.innerHTML = 
-Game Over<br>
-Score: ${score}<br>
-Best: ${best}<br><br>
-<button id="startBtn">دوباره</button>
-;
-
-setTimeout(()=>{
-document.getElementById("startBtn").onclick = start;
-},50);
 }
 
 function loop(){
@@ -190,7 +179,6 @@ frame++;
 requestAnimationFrame(loop);
 }
 
-init();
 </script>
 
 </body>
