@@ -13,14 +13,13 @@ display:flex;
 justify-content:center;
 align-items:center;
 height:100vh;
-overflow:hidden;
 font-family:tahoma;
+overflow:hidden;
 }
 
 canvas{
 background:linear-gradient(#70d6ff,#c2f5ff);
 border-radius:15px;
-box-shadow:0 0 25px rgba(0,0,0,0.3);
 }
 
 #ui{
@@ -62,43 +61,41 @@ Flappy Bird<br><br>
 <canvas id="game" width="420" height="700"></canvas>
 
 <script>
-window.onload = function(){
-
 const canvas = document.getElementById("game");
 const ctx = canvas.getContext("2d");
 const ui = document.getElementById("ui");
 const menu = document.getElementById("menu");
 const startBtn = document.getElementById("startBtn");
 
-let bird, pipes, frame, score, gravity, velocity, gameRunning;
+let bird, pipes, frame, score, gravity, velocity, running;
 
-function reset(){
+function init(){
 bird = {x:80, y:300, r:18};
 pipes = [];
 frame = 0;
 score = 0;
 gravity = 0.5;
 velocity = 0;
-gameRunning = false;
+running = false;
 ui.innerText = "0";
 }
 
-function startGame(){
-reset();
-gameRunning = true;
+function start(){
+init();
+running = true;
 menu.style.display = "none";
 loop();
 }
 
-startBtn.addEventListener("click", startGame);
+startBtn.onclick = start;
 
-document.addEventListener("keydown", jump);
-document.addEventListener("click", jump);
+document.addEventListener("keydown", ()=>{
+if(running) velocity = -8;
+});
 
-function jump(){
-if(!gameRunning) return;
-velocity = -8;
-}
+document.addEventListener("click", ()=> {
+if(running) velocity = -8;
+});
 
 function drawBird(){
 ctx.fillStyle="yellow";
@@ -108,8 +105,8 @@ ctx.fill();
 }
 
 function drawPipes(){
-for(let p of pipes){
 ctx.fillStyle="green";
+for(let p of pipes){
 ctx.fillRect(p.x,0,60,p.top);
 ctx.fillRect(p.x,p.top+150,60,700);
 }
@@ -117,8 +114,10 @@ ctx.fillRect(p.x,p.top+150,60,700);
 
 function updatePipes(){
 if(frame % 90 === 0){
-let top = Math.random()*300 + 100;
-pipes.push({x:420, top:top});
+pipes.push({
+x:420,
+top:Math.random()*300+100
+});
 }
 
 for(let i=0;i<pipes.length;i++){
@@ -131,7 +130,7 @@ gameOver();
 }
 }
 
-if(p.x + 60 < 0){
+if(p.x+60 < 0){
 pipes.splice(i,1);
 score++;
 ui.innerText = score;
@@ -140,14 +139,18 @@ ui.innerText = score;
 }
 
 function gameOver(){
-gameRunning = false;
+running = false;
 menu.style.display = "block";
-menu.innerHTML = Game Over<br>Score: ${score}<br><br><button id="startBtn">دوباره</button>;
-document.getElementById("startBtn").addEventListener("click", startGame);
+menu.innerHTML = 
+Game Over<br>
+Score: ${score}<br><br>
+<button id="startBtn">دوباره</button>
+;
+document.getElementById("startBtn").onclick = start;
 }
 
 function loop(){
-if(!gameRunning) return;
+if(!running) return;
 
 ctx.clearRect(0,0,canvas.width,canvas.height);
 
@@ -166,9 +169,7 @@ frame++;
 requestAnimationFrame(loop);
 }
 
-reset();
-
-};
+init();
 </script>
 
 </body>
