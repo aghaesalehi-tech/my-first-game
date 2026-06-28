@@ -1,3 +1,66 @@
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Flappy Bird</title>
+
+<style>
+body{
+margin:0;
+background:#4EC0CA;
+display:flex;
+justify-content:center;
+align-items:center;
+height:100vh;
+overflow:hidden;
+font-family:tahoma;
+}
+
+canvas{
+background:linear-gradient(#70d6ff,#c2f5ff);
+border-radius:15px;
+box-shadow:0 0 25px rgba(0,0,0,0.3);
+}
+
+#ui{
+position:absolute;
+top:20px;
+font-size:40px;
+color:white;
+text-shadow:2px 2px 5px black;
+}
+
+#menu{
+position:absolute;
+text-align:center;
+color:white;
+font-size:30px;
+text-shadow:2px 2px 5px black;
+}
+
+button{
+padding:12px 25px;
+font-size:18px;
+border:none;
+border-radius:10px;
+background:#ffd43b;
+cursor:pointer;
+}
+</style>
+</head>
+
+<body>
+
+<div id="ui">0</div>
+
+<div id="menu">
+Flappy Bird<br><br>
+<button onclick="startGame()">شروع بازی</button>
+</div>
+
+<canvas id="game" width="420" height="700"></canvas>
+
 <script>
 const canvas = document.getElementById("game");
 const ctx = canvas.getContext("2d");
@@ -14,7 +77,6 @@ score = 0;
 gravity = 0.5;
 velocity = 0;
 gameRunning = false;
-
 ui.innerText = "0";
 }
 
@@ -25,8 +87,8 @@ menu.style.display = "none";
 loop();
 }
 
-document.addEventListener("keydown", jump);
-document.addEventListener("click", jump);
+document.addEventListener("keydown", ()=>jump());
+document.addEventListener("click", ()=>jump());
 
 function jump(){
 if(!gameRunning) return;
@@ -58,7 +120,6 @@ for(let i=0;i<pipes.length;i++){
 let p = pipes[i];
 p.x -= 2;
 
-// collision
 if(bird.x+bird.r > p.x && bird.x-bird.r < p.x+60){
 if(bird.y-bird.r < p.top || bird.y+bird.r > p.top+150){
 gameOver();
@@ -76,11 +137,7 @@ ui.innerText = score;
 function gameOver(){
 gameRunning = false;
 menu.style.display = "block";
-menu.innerHTML = 
-Game Over<br>
-Score: ${score}<br><br>
-<button onclick="startGame()">دوباره</button>
-;
+menu.innerHTML = Game Over<br>Score: ${score}<br><button onclick="startGame()">دوباره</button>;
 }
 
 function loop(){
@@ -105,3 +162,6 @@ requestAnimationFrame(loop);
 
 reset();
 </script>
+
+</body>
+</html>
