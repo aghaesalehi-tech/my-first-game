@@ -2,12 +2,18 @@
 <html lang="fa">
 
 <head>
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>🐔 Flappy Chicken</title>
 
-    <link rel="stylesheet" href="Style.css">
+    <!-- جلوگیری از خطای favicon -->
+    <link rel="icon" href="data:,">
+
+    <!-- فایل استایل -->
+    <link rel="stylesheet" href="./Style.css">
+
 </head>
 
 <body>
@@ -20,17 +26,27 @@
 
         <div id="gameOver" class="hide">
 
-            <h2>Game Over</h2>
+            <h2>🐔 Game Over</h2>
+
+            <p>امتیاز شما:</p>
+
+            <h3 id="finalScore">0</h3>
 
             <input
                 id="playerName"
                 type="text"
                 maxlength="15"
-                placeholder="نام شما">
+                placeholder="نام خود را وارد کنید">
+
+            <button id="saveScore">
+                ثبت رکورد
+            </button>
 
             <button id="restart">
-                شروع مجدد
+                شروع دوباره
             </button>
+
+            <h3>🏆 10 رکورد برتر</h3>
 
             <div id="leaderboard"></div>
 
