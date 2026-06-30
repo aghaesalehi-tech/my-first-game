@@ -1,1 +1,1 @@
-console.log("Game Loaded");
+// Flappy Chicken
