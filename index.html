@@ -1,1 +1,47 @@
+<!DOCTYPE html>
+<html lang="fa">
 
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+
+<title>Flappy Chicken</title>
+
+<link rel="stylesheet" href="Style.css">
+
+</head>
+
+<body>
+
+<div id="game">
+
+<canvas id="canvas" width="400" height="600"></canvas>
+
+<div id="score">0</div>
+
+<div id="gameOver" class="hide">
+
+<h2>Game Over</h2>
+
+<input
+id="playerName"
+type="text"
+maxlength="15"
+placeholder="نام شما">
+
+<button id="restart">
+شروع مجدد
+</button>
+
+<div id="leaderboard"></div>
+
+</div>
+
+</div>
+
+<script type="module" src="Main.js"></script>
+
+</body>
+
+</html>
