@@ -1,17 +1,38 @@
 <!DOCTYPE html>
 <html lang="fa">
-
 <head>
-
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Flappy Chicken</title>
 
-<meta name="viewport"
-content="width=device-width,initial-scale=1.0">
+<link rel="stylesheet" href="css/style.css">
 
-<title>Flappy Chicken Online</title>
+<script type="module" src="js/main.js" defer></script>
+</head>
 
-<style>
+<body>
 
+<div id="game">
+
+<canvas id="canvas" width="400" height="600"></canvas>
+
+<div id="score">0</div>
+
+<div id="gameOver" class="hide">
+<h2>Game Over</h2>
+
+<input id="playerName" maxlength="15" placeholder="نام شما">
+
+<button id="restart">شروع مجدد</button>
+
+<div id="leaderboard"></div>
+
+</div>
+
+</div>
+
+</body>
+</html>
 *{
 margin:0;
 padding:0;
@@ -19,477 +40,107 @@ box-sizing:border-box;
 }
 
 body{
-
-background:#53d8fb;
-
+background:#87CEEB;
 display:flex;
-
 justify-content:center;
-
 align-items:center;
-
 height:100vh;
-
-overflow:hidden;
-
 font-family:tahoma;
+overflow:hidden;
+}
 
+#game{
+position:relative;
 }
 
 canvas{
-
-background:linear-gradient(#74d9ff,#d8f8ff);
-
-border-radius:20px;
-
-box-shadow:0 0 40px rgba(0,0,0,.35);
-
+background:#8fd8ff;
+border:3px solid #222;
+border-radius:8px;
 }
 
-#menu{
-
+#score{
 position:absolute;
-
-text-align:center;
-
-color:white;
-
-font-size:30px;
-
-font-weight:bold;
-
-text-shadow:2px 2px 5px black;
-
-}
-
-#ui{
-
-position:absolute;
-
-top:15px;
-
+top:10px;
 left:50%;
-
 transform:translateX(-50%);
-
-font-size:28px;
-
-color:white;
-
-text-shadow:2px 2px 4px black;
-
+font-size:32px;
+font-weight:bold;
+color:#fff;
+text-shadow:2px 2px #000;
 }
 
-#board{
-
+#gameOver{
 position:absolute;
+inset:0;
+background:#000a;
+display:flex;
+flex-direction:column;
+justify-content:center;
+align-items:center;
+gap:10px;
+}
 
-right:15px;
-
-top:15px;
-
-background:rgba(255,255,255,.85);
-
-padding:10px;
-
-border-radius:10px;
-
-font-size:15px;
-
-min-width:140px;
-
+.hide{
+display:none!important;
 }
 
 button{
-
-margin-top:20px;
-
-padding:12px 30px;
-
-border:none;
-
-border-radius:10px;
-
+padding:10px 20px;
 cursor:pointer;
-
-background:#ffd43b;
-
-font-size:18px;
-
-font-weight:bold;
-
 }
+export const GAME={
 
-button:hover{
+width:400,
+height:600,
 
-background:#ffe066;
+gravity:0.45,
 
-}
+jump:-8,
 
-</style>
+pipeGap:170,
 
-</head>
+pipeWidth:70,
 
-<body>
+pipeSpeed:2.5
 
-<div id="ui">
-
-0 | 0
-
-</div>
-
-<div id="menu">
-
-🐔 Flappy Chicken Online
-
-<br><br>
-
-<button id="startBtn">
-
-شروع بازی
-
-</button>
-
-</div>
-
-<div id="board">
-
-در حال دریافت رکورد...
-
-</div>
-
-<canvas
-
-id="game"
-
-width="420"
-
-height="700">
-
-</canvas>
-
-<script>
-
-const canvas=document.getElementById("game");
-
-const ctx=canvas.getContext("2d");
-
-const ui=document.getElementById("ui");
-
-const menu=document.getElementById("menu");
-
-const board=document.getElementById("board");
-
-const FIREBASE_URL="https://flappy-game-4bf44-default-rtdb.firebaseio.com/scores.json";
-
-let bird;
-
-let pipes;
-
-let score;
-
-let best;
-
-let gravity;
-
-let velocity;
-
-let running;
-
-let frame;
-
-let startBtn;
-  best = Number(localStorage.getItem("best")) || 0;
-
-function init(){
-
-bird={
-x:90,
-y:300,
-r:18
 };
+import {GAME} from "./config.js";
 
-pipes=[];
+export default class Bird{
 
-score=0;
+constructor(){
 
-gravity=0.5;
+this.x=90;
 
-velocity=0;
+this.y=250;
 
-frame=0;
+this.vy=0;
 
-running=false;
-
-ui.innerHTML=score+" | "+best;
-
-}
-
-window.onload=function(){
-
-startBtn=document.getElementById("startBtn");
-
-startBtn.onclick=startGame;
-
-document.addEventListener("keydown",jump);
-
-document.addEventListener("click",jump);
-
-init();
-
-loadBoard();
+this.r=18;
 
 }
 
-function startGame(){
+jump(){
 
-init();
-
-running=true;
-
-menu.style.display="none";
-
-requestAnimationFrame(loop);
+this.vy=GAME.jump;
 
 }
 
-function jump(){
+update(){
 
-if(!running)return;
+this.vy+=GAME.gravity;
 
-velocity=-8;
-
-}
-
-function drawBird(){
-
-ctx.font="34px serif";
-
-ctx.fillText("🐔",bird.x-15,bird.y+10);
+this.y+=this.vy;
 
 }
 
-function drawPipes(){
+draw(ctx){
 
-ctx.fillStyle="#1b8f2f";
+ctx.font="32px serif";
 
-pipes.forEach(p=>{
-
-ctx.fillRect(p.x,0,60,p.top);
-
-ctx.fillRect(p.x,p.top+170,60,700);
-
-});
-
-}
-
-function updateBird(){
-
-velocity+=gravity;
-
-bird.y+=velocity;
-
-if(bird.y<0||bird.y>690){
-
-gameOver();
+ctx.fillText("🐔",this.x-18,this.y+12);
 
 }
 
 }
-  function updatePipes(){
-
-if(frame%90===0){
-
-pipes.push({
-
-x:420,
-
-top:Math.random()*250+100
-
-});
-
-}
-
-for(let i=0;i<pipes.length;i++){
-
-let p=pipes[i];
-
-p.x-=2.5;
-
-if(
-
-bird.x+20>p.x&&
-
-bird.x<p.x+60&&
-
-(
-
-bird.y<p.top||
-
-bird.y>p.top+170
-
-)
-
-){
-
-gameOver();
-
-}
-
-if(p.x+60<0){
-
-pipes.splice(i,1);
-
-score++;
-
-if(score>best){
-
-best=score;
-
-localStorage.setItem("best",best);
-
-}
-
-ui.innerHTML=score+" | "+best;
-
-}
-
-}
-
-}
-
-function drawBackground(){
-
-ctx.fillStyle="#6fd9ff";
-
-ctx.fillRect(0,0,420,700);
-
-ctx.fillStyle="#9be564";
-
-ctx.fillRect(0,660,420,40);
-
-}
-
-function gameOver(){
-
-running=false;
-
-menu.style.display="block";
-
-menu.innerHTML=
-
-<h2>Game Over</h2>
-
-امتیاز: ${score}<br>
-
-رکورد: ${best}<br><br>
-
-<button id="startBtn">
-
-شروع دوباره
-
-</button>
-
-;
-
-document.getElementById("startBtn").onclick=startGame;
-
-saveScore();
-
-loadBoard();
-
-}
-  async function saveScore(){
-
-try{
-
-await fetch(FIREBASE_URL,{
-
-method:"POST",
-
-headers:{
-"Content-Type":"application/json"
-},
-
-body:JSON.stringify({
-
-name:"Guest",
-
-score:score,
-
-time:Date.now()
-
-})
-
-});
-
-}catch(e){
-
-console.log(e);
-
-}
-
-}
-
-async function loadBoard(){
-
-try{
-
-const res=await fetch(FIREBASE_URL);
-
-const data=await res.json();
-
-if(!data){
-
-board.innerHTML="<b>🏆 Top 5</b><br>هنوز رکوردی ثبت نشده";
-
-return;
-
-}
-
-let arr=Object.values(data);
-
-arr.sort((a,b)=>b.score-a.score);
-
-arr=arr.slice(0,5);
-
-board.innerHTML="<b>🏆 Top 5</b><br>";
-
-arr.forEach((item,index)=>{
-
-board.innerHTML+=${index+1}. ${item.score}<br>;
-
-});
-
-}catch(e){
-
-board.innerHTML="اتصال برقرار نشد";
-
-}
-
-}
-
-function loop(){
-
-if(!running)return;
-
-drawBackground();
-
-updateBird();
-
-updatePipes();
-
-drawPipes();
-
-drawBird();
-
-frame++;
-
-requestAnimationFrame(loop);
-
-}
-  </script>
-
-</body>
-
-</html>
